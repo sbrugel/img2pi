@@ -24,15 +24,6 @@ def closest(colors,color):
     smallest_distance = colors[index_of_smallest]
     return smallest_distance 
 
-def closest_color(rgb):
-    r, g, b = rgb
-    color_diffs = []
-    for color in COLORS:
-        cr, cg, cb = color
-        color_diff = sqrt((r - cr)**2 + (g - cg)**2 + (b - cb)**2)
-        color_diffs.append((color_diff, color))
-    return min(color_diffs)[1]
-
 def main():
     # resize the image to 8x8 (resolution of Pi sense hat)
     img = Image.open('septa.png')
