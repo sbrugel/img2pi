@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "pi.h"
 
 // converts an RGB value to a 16-bit color for use on the sense hat
 uint16_t getColor(int red, int green, int blue) {
