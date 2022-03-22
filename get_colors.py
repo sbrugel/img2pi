@@ -1,6 +1,9 @@
 from PIL import Image
 import os.path
 
+def find_occurences(string, char):
+    return [i for i, letter in enumerate(string) if letter == char]
+
 def main():
     # resize the image to 8x8 (resolution of Pi sense hat)
     img = Image.open('septa.png')
@@ -14,14 +17,30 @@ def main():
     # get colors from image, put in file
     width, height = result.size
     openMode = "x"
-    if os.path.exists('colors.txt'):
+    if os.path.exists('r.txt'):
         openMode = "w"
-    f = open('colors.txt', openMode)
+    red = open('r.txt', openMode)
+
+    openMode = "x"
+    if os.path.exists('g.txt'):
+        openMode = "w"
+    green = open('g.txt', openMode)
+
+    openMode = "x"
+    if os.path.exists('b.txt'):
+        openMode = "w"
+    blue = open('b.txt', openMode)
 
     for i in range(width):
         for j in range(height):
-            f.write(str(imgFinal[i,j]) + '\n')
+            colorString = str(imgFinal[i, j])
+            commas = find_occurences(colorString, ',')
+            red.write(colorString[1:commas[0]] + '\n') # don't include "("
+            green.write(colorString[commas[0] + 2:commas[1]] + '\n') # don't include comma
+            blue.write(colorString[commas[1] + 2:-1] + '\n') # don't include ")" or comma
 
-    f.close()
+    red.close()
+    green.close()
+    blue.close()
 
 main()

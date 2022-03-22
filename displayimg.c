@@ -1,28 +1,46 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 int main(void) {
-    char* fileName = "your file path here"; // the text file containing colors
-    FILE* file = fopen(fileName, "r");
+    char* reds = "./r"; // the text file containing all red colors
+    char* greens = "./g"; // the text file containing all green colors
+    char* blues = "./b"; // the text file containing all blue colors
+    
+    FILE* redFile = fopen(reds, "r");
+    FILE* greenFile = fopen(greens, "r");
+    FILE* blueFile = fopen(blues, "r");
     char line[256];
 
     int red[64], green[64], blue[64]; // there are 64 tiles to fill
+    int i = 0;
 
-    while (fgets(line, sizeof(line), file)) {
-        // make this get substring of each color, put in color arrays
-        printf("%s", line);
+    while (fgets(line, sizeof(line), redFile)) {
+        red[i] = atoi(line); // convert char* to int
+        i++;
     }
+    fclose(redFile);
 
-    fclose(file);
+    i = 0;
+    while (fgets(line, sizeof(line), greenFile)) {
+        green[i] = atoi(line);
+        i++;
+    }
+    fclose(greenFile);
+
+    i = 0;
+    while (fgets(line, sizeof(line), blueFile)) {
+        blue[i] = atoi(line);
+        i++;
+    }
+    fclose(blueFile);
 
     // nested loop goes here which assigns the colors to each tile
-    
+    for (int i = 0; i < 64; i++) {
+        printf("RED: %d, GREEN: %d, BLUE: %d\n", red[i], green[i], blue[i]);
+    }
+
     return 0;
 }
 
-char* substring(char* string, int start) {  // gets 3 characters from the start point of the specified string
-                                            // use this to get each RGB value
-    char subbuff[4];
-    memcpy(subbuff, string[start], 3);
-    subbuff[3] = '\0';
-    return subbuff;
-}
+// put in getColor method from sense.h here
