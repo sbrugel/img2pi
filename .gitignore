@@ -1,2 +1,6 @@
 # Simon's color files for testing
 *.txt
+
+# images used to test
+result.png
+septa.png

@@ -6,7 +6,8 @@ def find_occurences(string, char):
 
 def main():
     # resize the image to 8x8 (resolution of Pi sense hat)
-    img = Image.open('septa.png')
+    imageLoc = input('Enter the location of the image > ')
+    img = Image.open(imageLoc)
     result = img.resize((8, 8),resample=Image.BILINEAR)
 
     result.save('result.png')
