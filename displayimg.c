@@ -1,6 +1,15 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
+
+// converts an RGB value to a 16-bit color for use on the sense hat
+uint16_t getColor(int red, int green, int blue) {
+    red = (float)red / 255.0 * 31.0 + 0.5;
+    green = (float)green / 255.0 * 63.0 + 0.5;
+    blue = (float)blue / 255.0 * 31.0 + 0.5;
+    return red<<11|green<<5|blue;
+}
 
 int main(void) {
     char* reds = "./r"; // the text file containing all red colors
@@ -35,12 +44,20 @@ int main(void) {
     }
     fclose(blueFile);
 
+    // these lines come from the 'sense.h' library
+    pi_framebuffer_t *fb = getFrameBuffer();
+    sense_fb_bitmap_t *bm=fb->bitmap;
+    clearFrameBuffer(fb, 0x0000); // make the whole sense hat board black
+
     // nested loop goes here which assigns the colors to each tile
     for (int i = 0; i < 64; i++) {
-        printf("RED: %d, GREEN: %d, BLUE: %d\n", red[i], green[i], blue[i]);
+        uint16_t color = getColor(red[i], green[i], blue[i]);
+        int x = i % 8;
+        int y = (int)(i / 8);
+
+        // these lines utilize functions included with 'sense.h'
+        setPixel(&bm, x, y, color);
     }
 
     return 0;
 }
-
-// put in getColor method from sense.h here
