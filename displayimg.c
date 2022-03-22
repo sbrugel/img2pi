@@ -104,7 +104,7 @@ int main(void) {
     clearFrameBuffer(fb, 0x0000); // make the whole sense hat board black
 
     // nested loop goes here which assigns the colors to each tile
-	int j = 0;
+    int j = 0;
     for (int i = 63; i > 0; i--) {
         uint16_t color = getColor(red[i], green[i], blue[i]);
         int x = j % 8;
@@ -112,7 +112,7 @@ int main(void) {
 
         // these lines utilize functions included with 'sense.h'
         bm->pixel[y][x]=color;
-		j++;
+	    j++;
     }
 
     return 0;

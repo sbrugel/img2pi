@@ -5,7 +5,7 @@ This entails a Python script that takes a user-specified image, shrinks it down 
 
 A C script is also included which takes the data from those text files and displays the pixelated image on the sense hat.
 
-You can find a short demonstration of this program [here](URL)
+You can find a short demonstration of this program [here](https://youtu.be/IDtjmli2TMs)
 
 ## Running the Program
 
