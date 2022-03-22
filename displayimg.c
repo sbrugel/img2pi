@@ -1,7 +1,14 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <linux/fb.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
 #include "pi.h"
 
 // converts an RGB value to a 16-bit color for use on the sense hat
@@ -10,6 +17,52 @@ uint16_t getColor(int red, int green, int blue) {
     green = (float)green / 255.0 * 63.0 + 0.5;
     blue = (float)blue / 255.0 * 31.0 + 0.5;
     return red<<11|green<<5|blue;
+}
+
+static int isFrameBuffer(const struct dirent *dev){
+    return strncmp("fb",dev->d_name,2)==0;
+}
+
+void clearFrameBuffer(pi_framebuffer_t* fb,uint16_t color){
+    int i,j;
+    for (i=0;i<8;i++)
+        for (j=0;j<8;j++)
+            fb->bitmap->pixel[i][j]=color;
+}
+
+static pi_framebuffer_t* getFBDevice(const char* name){
+    pi_framebuffer_t* result=0;
+    int fd=open(name,O_RDWR);
+    if (fd<0) return 0;
+
+    result=malloc(sizeof(pi_framebuffer_t));
+    ioctl(fd,FBIOGET_FSCREENINFO,&result->info);
+    if (strcmp("RPi-Sense FB",result->info.id)!=0){
+        close(fd);
+        free(result);
+        return 0;
+    }
+    result->fd=fd;
+    result->bitmap=mmap(0,128,PROT_READ | PROT_WRITE,MAP_SHARED,fd,0);
+    return result;
+}
+
+pi_framebuffer_t* getFrameBuffer() {
+    pi_framebuffer_t* result = 0;
+    struct dirent **list;
+    int i, ndev;
+    ndev = scandir("/dev", &list, isFrameBuffer, versionsort);
+    if (ndev <= 0) return 0; // no framebuffers found
+    for (i = 0; i < ndev; i++) {
+        char fname[512];
+        snprintf(fname, sizeof(fname), "/dev/%s", list[i]->d_name);
+        result = getFBDevice(fname);
+        if (result) break;
+    }
+    for (i = 0; i < ndev; i++) {
+        free(list[i]);
+    }
+    return result;
 }
 
 int main(void) {
@@ -57,7 +110,7 @@ int main(void) {
         int y = (int)(i / 8);
 
         // these lines utilize functions included with 'sense.h'
-        setPixel(&bm, x, y, color);
+        &bm->pixel[y][x]=color;
     }
 
     return 0;
